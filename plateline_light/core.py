@@ -920,11 +920,15 @@ class FH_DropPlates(bpy.types.FileHandler):
 class OT_ReorderSelectedCameras(Operator):
     bl_idname = "plateline.reorder_cameras"
     bl_label = "Reorder Selected"
+    bl_description = ("Re-stack the selected cameras on the timeline in name "
+                      "order, starting at the frame above. Their markers and "
+                      "plate offsets move with them")
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):
-        return any(o.type == 'CAMERA' for o in context.selected_objects)
+        return any(o.type == 'CAMERA'
+                   for o in getattr(context, 'selected_objects', None) or [])
 
     def execute(self, context):
         cameras = sorted(

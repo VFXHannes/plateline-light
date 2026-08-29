@@ -36,7 +36,8 @@
 * **Keep Filename** — use the video file's name verbatim.
 
 ### Maintenance
-* **Reorder Selected** — sorts the selected cameras alphabetically and re-stacks them on the timeline, moving their markers and background offsets with them.
+* **Reorder Selected** (the **Tools** box) — re-stacks the selected cameras on the timeline in name order, starting at the **Start Frame** set just above the button, and spacing them by each plate's own length plus the **Gap**. Their markers and plate offsets move with them, and the scene end frame follows.
+  Use it after deleting a shot, renaming to change the order, or importing a second batch you want folded into the existing run.
 * **Marker Binding** — every camera gets a bound timeline marker, so scrubbing switches cameras automatically.
 
 ## Installation

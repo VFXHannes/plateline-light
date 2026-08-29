@@ -50,8 +50,7 @@ for layout, matchmove and previs work.
 - **Proxy pipeline** — JPG proxies at 25/50/75/100 % with a one-click resolution
   switcher. The panel shows which version is on screen and which resolutions
   already exist on disk, so existing proxies are found rather than rebuilt. Built with Blender's own video sequencer, so there is nothing to
-  install. A progress bar runs while it works, Esc cancels, and rendering
-  proceeds a frame at a time so the interface never locks up.
+  install. A progress bar runs while it works, and Esc cancels.
 
 ### Known limitations
 
