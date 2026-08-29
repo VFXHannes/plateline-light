@@ -20,6 +20,8 @@ for layout, matchmove and previs work.
 - **Sequences keep their length**, gaps included.
 - **Placement modes** — append after the last clip, start at the playhead, or at
   a fixed frame, with optional handle frames between clips.
+- **Cameras land in their own collection**, reused across imports, so a whole
+  shot list can be selected or hidden at once.
 
 ### Naming
 

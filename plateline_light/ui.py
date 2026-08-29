@@ -82,6 +82,14 @@ class PT_PlatelinePanel(Panel):
             for line in core.preview_names(settings):
                 body.label(text="    " + line)
 
+        # Before the import buttons: it changes where the result lands, so it
+        # belongs with the settings rather than after them.
+        dest = box.column(align=True)
+        dest.prop(settings, "use_collection")
+        sub = dest.row(align=True)
+        sub.enabled = settings.use_collection
+        sub.prop(settings, "collection_name", text="")
+
         row = box.row(align=True)
         row.operator("plateline.import_files",
                      text="Files" if _import_extras else "Import Files", icon='FILE_MOVIE')

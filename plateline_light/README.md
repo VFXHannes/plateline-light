@@ -12,6 +12,7 @@
     * **Append** — finds the end of the current sequence and places new clips after the last one.
     * **Cursor** — starts exactly at the playhead.
     * **Manual** — starts at a fixed frame number.
+* **Into a Collection** — new cameras go into their own collection ("Plates" by default), nested under whichever collection is active. Importing again reuses it rather than making a second one, so the whole shot list stays selectable and hideable in one click. Switch it off to drop the cameras straight into the active collection.
 * **Auto Setup** — creates a camera per clip and configures the background image reference (opacity, depth, focal length, height).
 * **Gap Control** — insert handle frames between clips automatically.
 

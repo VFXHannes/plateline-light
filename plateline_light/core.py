@@ -539,6 +539,19 @@ class PlatelineSettings(PropertyGroup):
         description="Text to put in its place. Leave empty to strip the Find text out",
         default="",
     )
+    use_collection: BoolProperty(
+        name="Into a Collection",
+        description="Put the new cameras in their own collection, so the whole "
+                    "shot list can be selected or hidden in one click",
+        default=True,
+    )
+    collection_name: StringProperty(
+        name="Collection",
+        description="Name of the collection to put the cameras in. An existing "
+                    "one with this name is reused, so importing twice does not "
+                    "split the shots across two collections",
+        default="Plates",
+    )
     name_pattern: StringProperty(
         name="Pattern",
         description=("# runs become the shot number, @ runs the sequence. "
@@ -685,6 +698,34 @@ def apply_lens(cam_data, item, settings):
     return False
 
 
+def target_collection(context, settings):
+    """Where new cameras go.
+
+    Nested under the active collection rather than the scene root, so it
+    respects wherever the artist is already working. An existing collection of
+    the same name is reused: importing a second batch should extend the shot
+    list, not create `Plates.001` beside it.
+    """
+    if not settings.use_collection:
+        return context.collection
+
+    name = settings.collection_name.strip() or "Plates"
+    parent = context.collection
+    for child in parent.children:
+        if child.name == name:
+            return child
+
+    existing = bpy.data.collections.get(name)
+    if existing is not None:
+        linked = getattr(context.scene.collection, "children_recursive", None)
+        if linked is not None and existing in linked:
+            return existing
+
+    made = bpy.data.collections.new(name)
+    parent.children.link(made)
+    return made
+
+
 def create_camera(context, item, name, frame, settings):
     if item.is_movie:
         asset = bpy.data.movieclips.load(item.path, check_existing=True)
@@ -694,7 +735,7 @@ def create_camera(context, item, name, frame, settings):
 
     cam_data = bpy.data.cameras.new(name)
     cam_obj = bpy.data.objects.new(name, cam_data)
-    context.collection.objects.link(cam_obj)
+    target_collection(context, settings).objects.link(cam_obj)
 
     cam_obj.location = (0.0, 0.0, settings.cam_height)
     cam_obj.rotation_euler = (math.radians(90.0), 0.0, 0.0)
