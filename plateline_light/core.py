@@ -322,6 +322,22 @@ def get_bg_duration(bg, default=DEFAULT_IMAGE_DURATION):
     return default
 
 
+def sequence_frame_offset(image):
+    """Offset that makes a sequence resolve to its own first file.
+
+    Blender picks the frame to show as `scene_frame - frame_start + 1 +
+    frame_offset`. With an offset of 0 that asks for frame 1, so a sequence
+    whose files are numbered from 1001 sends Blender looking for `plate.0001`,
+    which does not exist -- and a missing frame draws nothing at all. The
+    background looks correctly configured and stays empty.
+    """
+    if image is None or image.source != 'SEQUENCE':
+        return 0
+    stem = os.path.splitext(os.path.basename(image.filepath))[0]
+    _prefix, digits = split_frame_number(stem)
+    return int(digits) - 1 if digits else 0
+
+
 def get_bg_start(bg, default=0):
     if bg is None:
         return default
@@ -339,7 +355,7 @@ def set_bg_start(bg, frame):
         bg.clip.frame_start = frame
     elif bg.source == 'IMAGE':
         bg.image_user.frame_start = frame
-        bg.image_user.frame_offset = 0
+        bg.image_user.frame_offset = sequence_frame_offset(bg.image)
 
 
 # --- timeline markers ---
@@ -556,14 +572,20 @@ class PlatelineSettings(PropertyGroup):
 class ImportItem:
     """One camera's worth of source: a movie, a still, or a whole sequence."""
 
-    __slots__ = ("path", "name", "duration", "is_movie", "sort_key", "group")
+    __slots__ = ("path", "name", "duration", "is_movie", "sort_key", "group",
+                 "is_sequence")
 
-    def __init__(self, path, name, duration, is_movie, sort_key, group=None):
+    def __init__(self, path, name, duration, is_movie, sort_key, group=None,
+                 is_sequence=False):
         self.path = path
         self.name = name
         self.duration = duration
         self.is_movie = is_movie
         self.sort_key = sort_key
+        # A lone still must not be loaded as a SEQUENCE: Blender would then look
+        # for a different numbered file on every frame of the hold and draw
+        # nothing after the first.
+        self.is_sequence = is_sequence
         # Which sequence this shot belongs to; drives the `@` counter. None
         # keeps everything in one sequence, which is right for a flat selection.
         self.group = group
@@ -581,7 +603,8 @@ def make_item(filepath, sort_key):
         return ImportItem(filepath, name, duration, True, sort_key)
 
     first, duration, is_seq = scan_sequence(filepath)
-    return ImportItem(first, sequence_display_name(first, is_seq), duration, False, sort_key)
+    return ImportItem(first, sequence_display_name(first, is_seq), duration,
+                      False, sort_key, is_sequence=is_seq)
 
 
 def is_supported(filename):
@@ -667,7 +690,7 @@ def create_camera(context, item, name, frame, settings):
         asset = bpy.data.movieclips.load(item.path, check_existing=True)
     else:
         asset = bpy.data.images.load(item.path, check_existing=True)
-        asset.source = 'SEQUENCE'
+        asset.source = 'SEQUENCE' if item.is_sequence else 'FILE'
 
     cam_data = bpy.data.cameras.new(name)
     cam_obj = bpy.data.objects.new(name, cam_data)
@@ -691,7 +714,7 @@ def create_camera(context, item, name, frame, settings):
         bg.image = asset
         bg.image_user.frame_duration = item.duration
         bg.image_user.frame_start = frame
-        bg.image_user.frame_offset = 0
+        bg.image_user.frame_offset = sequence_frame_offset(asset)
         bg.image_user.use_auto_refresh = True
 
     place_marker(context.scene, cam_obj, frame)
@@ -788,7 +811,9 @@ def _report_result(operator, created, skipped, from_metadata, noun):
 
 class OT_ImportFiles(Operator, ImportHelper):
     bl_idname = "plateline.import_files"
-    bl_label = "Import Files with Plateline"
+    # Short: this is the file browser's confirm button, which clips a long
+    # label. The tooltip carries the detail.
+    bl_label = "Import"
     bl_description = "Import selected plates. Frames of one sequence become a single camera"
     bl_options = {'REGISTER', 'UNDO'}
 
