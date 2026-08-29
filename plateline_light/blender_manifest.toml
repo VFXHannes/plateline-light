@@ -1,0 +1,19 @@
+schema_version = "1.0.0"
+
+id = "plateline_light"
+version = "3.0.0"
+name = "Plateline Light"
+tagline = "Batch-create cameras from plates and image sequences"
+maintainer = "Hannes Werner"
+type = "add-on"
+website = "https://github.com/VFXHannes/plateline-light"
+
+tags = ["Camera", "Animation", "Import-Export"]
+
+blender_version_min = "4.5.0"
+
+license = ["SPDX:GPL-3.0-or-later"]
+copyright = ["2024-2026 Hannes Werner"]
+
+[permissions]
+files = "Load video plates and image sequences"

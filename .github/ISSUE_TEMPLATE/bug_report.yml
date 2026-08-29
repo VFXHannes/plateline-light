@@ -1,0 +1,52 @@
+name: Bug report
+description: Something imported wrongly, or the add-on errored
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Plateline is mostly about file names and folder structure, so the two
+        questions below usually solve it faster than anything else.
+  - type: input
+    id: blender
+    attributes:
+      label: Blender version
+      placeholder: "4.5.5 LTS"
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edition
+      options: [Light, Pro]
+    validations:
+      required: true
+  - type: textarea
+    id: names
+    attributes:
+      label: What did you import?
+      description: >
+        Paste a few real file names, and the folder structure if it matters.
+        Exact names help -- most import problems come down to how the frame
+        number or shot code is written.
+      render: text
+      placeholder: |
+        PLATES/
+          0010_0010/v003/exr/
+            plate.1001.exr
+            plate.1002.exr
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      placeholder: "Got one camera called 'exr'. Expected three, named after the shots."
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output, if any
+      description: "Window > Toggle System Console on Windows; run from a terminal on macOS/Linux."
+      render: shell
