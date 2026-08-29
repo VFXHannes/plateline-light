@@ -451,6 +451,7 @@ def get_source_path(camera):
 class PlatelineSettings(PropertyGroup):
     placement_mode: EnumProperty(
         name="Placement",
+        description="Where new clips start on the timeline",
         items=[
             ('MANUAL', "Manual", "Start strictly at the frame set below"),
             ('APPEND', "Append", "Start after the last existing clip"),
@@ -458,35 +459,70 @@ class PlatelineSettings(PropertyGroup):
         ],
         default='APPEND',
     )
-    start_frame: IntProperty(name="Start Frame", default=1001)
-    clip_gap: IntProperty(name="Gap", default=0, min=0)
-    cam_height: FloatProperty(name="Height", default=1.0)
-    focal_length: FloatProperty(name="Focal Length", default=35.0, min=1.0)
+    start_frame: IntProperty(
+        name="Start Frame",
+        description="Frame the first clip starts on. Used by Manual placement, "
+                    "and as the starting point when the timeline is empty",
+        default=1001,
+    )
+    clip_gap: IntProperty(
+        name="Gap",
+        description="Blank frames left between one clip and the next, for handles",
+        default=0, min=0,
+    )
+    cam_height: FloatProperty(
+        name="Height",
+        description="Height above the origin at which each camera is placed",
+        default=1.0,
+    )
+    focal_length: FloatProperty(
+        name="Focal Length",
+        description="Focal length to use when the plate carries no lens data, "
+                    "or when Lens is set to Manual",
+        default=35.0, min=1.0,
+    )
     focal_source: EnumProperty(
         name="Focal Length",
+        description="Where each camera's focal length comes from",
         items=[
             ('METADATA', "From Metadata", "Read the lens from the plate when it carries one, otherwise use the value below"),
             ('MANUAL', "Manual", "Always use the value below"),
         ],
         default='METADATA',
     )
-    bg_opacity: FloatProperty(name="Opacity", default=0.5, min=0.0, max=1.0)
+    bg_opacity: FloatProperty(
+        name="Opacity",
+        description="How strongly the background plate is drawn in the viewport",
+        default=0.5, min=0.0, max=1.0,
+    )
     bg_depth: EnumProperty(
         name="Depth",
-        items=[('FRONT', "Front", ""), ('BACK', "Back", "")],
+        description="Whether the plate draws over the scene or behind it",
+        items=[('FRONT', "Front", "Draw the plate in front of the scene"),
+               ('BACK', "Back", "Draw the plate behind the scene")],
         default='FRONT',
     )
     naming_mode: EnumProperty(
         name="Mode",
+        description="How each camera's name is derived from its plate",
         items=[
-            ('FILENAME', "Filename", "Use the file name as-is"),
+            ('FILENAME', "Filename", "Use the file name as-is, minus the frame number"),
             ('REPLACE', "Replace", "Search and replace within the file name"),
-            ('PATTERN', "Pattern", "Numbered pattern, e.g. Shot_##"),
+            ('PATTERN', "Pattern",
+             "Numbered pattern: # runs become the shot number, @ runs the sequence"),
         ],
         default='FILENAME',
     )
-    find_str: StringProperty(name="Find", default="_plate")
-    replace_str: StringProperty(name="Replace", default="")
+    find_str: StringProperty(
+        name="Find",
+        description="Text to look for in the file name, for Replace naming",
+        default="_plate",
+    )
+    replace_str: StringProperty(
+        name="Replace",
+        description="Text to put in its place. Leave empty to strip the Find text out",
+        default="",
+    )
     name_pattern: StringProperty(
         name="Pattern",
         description=("# runs become the shot number, @ runs the sequence. "
