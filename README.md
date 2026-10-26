@@ -40,9 +40,26 @@ usually identifies the cause immediately.
 
 ## Plateline Pro
 
-Pro adds recursive folder import, lens metadata read from EXR and EXIF headers,
-and the proxy pipeline. Its source is not in this repository, but bug reports
-for shared behaviour are welcome here.
+Light covers the import: one camera per shot, sequence grouping, naming,
+markers. Pro is for when a whole delivery lands at once:
+
+- **Folder import.** Point it at the plates folder and it walks the tree.
+  Format and version folders (`exr/`, `v003/`) are skipped when naming.
+- **Lens from metadata.** Focal length and sensor width read from EXR headers
+  and JPEG/TIFF EXIF, so forty cameras do not need the same number typed in.
+- **Proxies.** JPG proxies at 25 to 100 percent, built with Blender's own
+  sequencer, switchable per camera. 4K EXR plates scrub again.
+- **The rest of the EXR header** (ISO, shutter, timecode, camera, reel) stored
+  on each camera.
+
+Pro is $19 on [Superhive](https://superhivemarket.com/products/plateline-pro).
+It shares its core with Light, so a scene built in Light opens in Pro unchanged.
+Its source is not in this repository, but bug reports for shared behaviour are
+welcome here.
+
+If Light saved you an afternoon, a rating on
+[extensions.blender.org](https://extensions.blender.org/add-ons/plateline-light/)
+helps other people find it.
 
 ## Licence
 
